@@ -32,10 +32,15 @@ Add these repository secrets in GitHub:
 - `CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT`
   - `image-backup-runtime@image-backup-493507.iam.gserviceaccount.com`
 - `GCP_SERVICE_ACCOUNT`
-  - Example: `github-deploy@image-backup-493507.iam.gserviceaccount.com`
+  - `github-deploy@image-backup-493507.iam.gserviceaccount.com`
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
   - Example:
     `projects/803663828198/locations/global/workloadIdentityPools/github/providers/github-actions`
+
+The workflow uses `GCP_SERVICE_ACCOUNT` in two places:
+
+- GitHub Actions authenticates as this service account through Workload Identity Federation.
+- Cloud Run source deploy uses it as the explicit build service account via `--build-service-account`, which avoids relying on a deleted default Cloud Build service account.
 
 ## Runtime secrets
 

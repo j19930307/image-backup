@@ -37,5 +37,6 @@ jobs:
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --region "${{ secrets.GCP_REGION }}" \
             --allow-unauthenticated \
+            --build-service-account "projects/${{ secrets.GCP_PROJECT_ID }}/serviceAccounts/${{ secrets.GCP_SERVICE_ACCOUNT }}" \
             --service-account "${{ secrets.CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT }}" \
             --quiet
