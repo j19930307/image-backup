@@ -90,3 +90,19 @@ One-time setup is documented in [DEPLOY.md](./DEPLOY.md). The workflow expects t
 - `CLOUD_RUN_SERVICE`
 - `GCP_SERVICE_ACCOUNT`
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
+
+## Register Discord command
+
+You can retry slash command registration with:
+
+```powershell
+.\scripts\register_discord_command.ps1
+```
+
+The script reads Discord values from `.env`.
+
+There is also a Python version modeled after a typical `register_commands.py` workflow:
+
+```powershell
+python .\register_commands.py
+```
