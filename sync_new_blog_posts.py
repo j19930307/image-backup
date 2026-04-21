@@ -18,6 +18,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Only refresh blog_posts.json. Do not run Google Drive backup.",
     )
+    parser.add_argument(
+        "--sync-notion",
+        action="store_true",
+        help="Sync blog_posts.json to Notion after backup.",
+    )
     return parser.parse_args()
 
 
@@ -74,6 +79,13 @@ def main() -> None:
         check=True,
         cwd=repo_dir,
     )
+
+    if args.sync_notion:
+        subprocess.run(
+            [sys.executable, str(repo_dir / "sync_blog_posts_to_notion.py")],
+            check=True,
+            cwd=repo_dir,
+        )
 
 
 if __name__ == "__main__":

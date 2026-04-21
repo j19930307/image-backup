@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+import os
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from backup_core import DEFAULT_DOWNLOAD_WORKERS, DEFAULT_MIN_IMAGE_BYTES, backup_images, sanitize_drive_folder_name
 
 DEFAULT_DRIVE_PARENT_ID = "1SJ30EQNzc6ha-JgHciww9kQ7gmqJwfNp"
+LOCAL_TIMEZONE = timezone(timedelta(hours=8))
 
 
 def parse_args() -> argparse.Namespace:
@@ -19,7 +21,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--drive-parent-id",
-        default=DEFAULT_DRIVE_PARENT_ID,
+        default=os.getenv("GOOGLE_DRIVE_PARENT_ID", DEFAULT_DRIVE_PARENT_ID),
         help="Optional Google Drive parent folder ID.",
     )
     parser.add_argument(
@@ -42,13 +44,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--min-image-bytes",
         type=int,
-        default=DEFAULT_MIN_IMAGE_BYTES,
+        default=int(os.getenv("MIN_IMAGE_BYTES", str(DEFAULT_MIN_IMAGE_BYTES))),
         help="Skip images smaller than this many bytes.",
     )
     parser.add_argument(
         "--max-download-workers",
         type=int,
-        default=DEFAULT_DOWNLOAD_WORKERS,
+        default=int(os.getenv("MAX_DOWNLOAD_WORKERS", str(DEFAULT_DOWNLOAD_WORKERS))),
         help="Concurrent download workers per article.",
     )
     return parser.parse_args()
@@ -64,6 +66,10 @@ def save_posts(output_path: Path, posts: list[dict[str, object]]) -> None:
 
 def safe_print(message: str) -> None:
     print(message.encode("cp950", errors="replace").decode("cp950"))
+
+
+def now_local_iso() -> str:
+    return datetime.now(LOCAL_TIMEZONE).isoformat(timespec="seconds")
 
 
 def main() -> None:
@@ -105,7 +111,7 @@ def main() -> None:
 
         folder_name = sanitize_drive_folder_name(title, str(post.get("slug") or url))
         post["drive_folder_name"] = folder_name
-        post["backup_started_at"] = datetime.now().isoformat(timespec="seconds")
+        post["backup_started_at"] = now_local_iso()
         safe_print(f"[{processed + 1}/{total_to_process}] START {title}")
         safe_print(f"[{processed + 1}/{total_to_process}] URL {url}")
         safe_print(f"[{processed + 1}/{total_to_process}] FOLDER {folder_name}")
@@ -128,13 +134,13 @@ def main() -> None:
             post["drive_folder_link"] = result["drive_folder_link"]
             post["backup_status"] = "success"
             post["backup_error"] = None
-            post["backup_finished_at"] = datetime.now().isoformat(timespec="seconds")
+            post["backup_finished_at"] = now_local_iso()
             if cleanup is not None:
                 cleanup.cleanup()
         except Exception as exc:  # noqa: BLE001
             post["backup_status"] = "failed"
             post["backup_error"] = str(exc)
-            post["backup_finished_at"] = datetime.now().isoformat(timespec="seconds")
+            post["backup_finished_at"] = now_local_iso()
         save_posts(input_path, posts)
         if post["backup_status"] == "success":
             safe_print(f"[{processed + 1}/{total_to_process}] OK {title} -> {post['drive_folder_link']}")

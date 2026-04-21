@@ -73,6 +73,23 @@ To refresh the list later and back up only new posts:
 python sync_new_blog_posts.py
 ```
 
+To refresh, back up new posts, and sync Notion:
+
+```bash
+python sync_new_blog_posts.py --sync-notion
+```
+
+To create or update a Notion database from `blog_posts.json`:
+
+```bash
+python sync_blog_posts_to_notion.py
+```
+
+Required Notion environment variables:
+
+- `NOTION_TOKEN`
+- `NOTION_PARENT_PAGE_ID` for first-time database creation, or `NOTION_DATABASE_ID` for later syncs.
+
 ## Personal Google Drive OAuth setup
 
 Use this if your Drive is a personal Google account.
