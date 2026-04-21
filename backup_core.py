@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import json
 import mimetypes
 import os
@@ -8,7 +9,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 import google.auth
 import requests
@@ -27,12 +28,24 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 )
 SOCIAL_KEYWORDS = ("icon", "logo", "discord", "instagram", "youtube", "tiktok", "facebook", "twitter")
+DEFAULT_MIN_IMAGE_BYTES = 100 * 1024
+DEFAULT_DOWNLOAD_WORKERS = 8
 
 
 def slug_from_url(url: str) -> str:
     path = urlparse(url).path.rstrip("/")
     slug = Path(path).name or "triples-blog-images"
     return re.sub(r"[^a-zA-Z0-9._-]+", "-", slug).strip("-")
+
+
+def sanitize_drive_folder_name(name: str, fallback: str | None = None) -> str:
+    sanitized = re.sub(r'[<>:"/\\|?*]+', " ", name)
+    sanitized = re.sub(r"\s+", " ", sanitized).strip().rstrip(".")
+    if sanitized:
+        return sanitized[:200]
+    if fallback:
+        return sanitize_drive_folder_name(fallback)
+    return "triples-blog-images"
 
 
 def fetch_html(url: str) -> str:
@@ -73,8 +86,8 @@ def extract_image_urls(base_url: str, html: str) -> list[str]:
     return deduped
 
 
-def guess_extension(response: requests.Response, url: str) -> str:
-    content_type = response.headers.get("Content-Type", "").split(";")[0].strip().lower()
+def guess_extension_from_content_type(content_type: str, url: str) -> str:
+    content_type = content_type.split(";")[0].strip().lower()
     guessed = mimetypes.guess_extension(content_type) if content_type else None
     if guessed == ".jpe":
         guessed = ".jpg"
@@ -86,7 +99,7 @@ def guess_extension(response: requests.Response, url: str) -> str:
 
 def build_output_name(image_url: str, used_names: set[str]) -> str:
     parsed_path = Path(urlparse(image_url).path)
-    original_name = parsed_path.name or "downloaded-file"
+    original_name = sanitize_file_name(unquote(parsed_path.name or "downloaded-file"))
     stem = Path(original_name).stem or "downloaded-file"
     suffix = Path(original_name).suffix
 
@@ -100,30 +113,56 @@ def build_output_name(image_url: str, used_names: set[str]) -> str:
     return candidate
 
 
-def download_images(image_urls: Iterable[str], output_dir: Path) -> list[dict[str, str]]:
+def sanitize_file_name(file_name: str, max_stem_length: int = 120) -> str:
+    path = Path(file_name)
+    stem = re.sub(r'[<>:"/\\|?*\x00-\x1f]+', "_", path.stem).strip(" ._")
+    suffix = re.sub(r"[^a-zA-Z0-9.]+", "", path.suffix)
+    if not stem:
+        stem = "downloaded-file"
+    return f"{stem[:max_stem_length]}{suffix[:16]}"
+
+
+def fetch_image_bytes(image_url: str) -> tuple[str, bytes, str]:
+    response = requests.get(image_url, timeout=60, headers={"User-Agent": USER_AGENT})
+    response.raise_for_status()
+    return image_url, response.content, response.headers.get("Content-Type", "")
+
+
+def download_images(
+    image_urls: Iterable[str],
+    output_dir: Path,
+    min_image_bytes: int = DEFAULT_MIN_IMAGE_BYTES,
+    max_workers: int = DEFAULT_DOWNLOAD_WORKERS,
+) -> list[dict[str, str]]:
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest: list[dict[str, str]] = []
-    session = requests.Session()
-    session.headers.update({"User-Agent": USER_AGENT})
     used_names: set[str] = set()
+    downloaded_items: list[tuple[str, bytes, str]] = []
 
-    for index, image_url in enumerate(image_urls, start=1):
-        response = session.get(image_url, timeout=60)
-        response.raise_for_status()
+    with ThreadPoolExecutor(max_workers=max(1, max_workers)) as executor:
+        for image_url, content, content_type in executor.map(fetch_image_bytes, image_urls):
+            if len(content) < min_image_bytes:
+                continue
+            downloaded_items.append((image_url, content, content_type))
+
+    for index, (image_url, content, content_type) in enumerate(downloaded_items, start=1):
         file_name = build_output_name(image_url, used_names)
         if not Path(file_name).suffix:
-            file_name = f"{Path(file_name).stem}{guess_extension(response, image_url)}"
+            file_name = f"{Path(file_name).stem}{guess_extension_from_content_type(content_type, image_url)}"
         file_path = output_dir / file_name
-        file_path.write_bytes(response.content)
+        file_path.write_bytes(content)
         manifest.append(
             {
                 "index": str(index),
                 "url": image_url,
                 "file_name": file_name,
-                "content_type": response.headers.get("Content-Type", ""),
+                "content_type": content_type,
                 "size_bytes": str(file_path.stat().st_size),
             }
         )
+
+    if not manifest:
+        raise RuntimeError("No downloadable article images remained after filtering small assets.")
 
     return manifest
 
@@ -263,6 +302,9 @@ def backup_images(
     drive_parent_id: str | None = None,
     share_with_anyone: bool = True,
     upload_to_drive: bool = True,
+    upload_manifest: bool = True,
+    min_image_bytes: int = DEFAULT_MIN_IMAGE_BYTES,
+    max_download_workers: int = DEFAULT_DOWNLOAD_WORKERS,
     work_dir: Path | None = None,
     repo_dir: Path | None = None,
 ) -> dict[str, object]:
@@ -277,7 +319,12 @@ def backup_images(
     output_dir = base_dir / slug
     html = fetch_html(url)
     image_urls = extract_image_urls(url, html)
-    manifest = download_images(image_urls, output_dir)
+    manifest = download_images(
+        image_urls,
+        output_dir,
+        min_image_bytes=min_image_bytes,
+        max_workers=max_download_workers,
+    )
     manifest_path = write_manifest(output_dir, url, manifest)
 
     result = {
@@ -290,15 +337,19 @@ def backup_images(
 
     if upload_to_drive:
         service = build_drive_service(repo_dir)
-        folder_id = ensure_drive_folder(service, drive_folder_name, drive_parent_id)
+        safe_drive_folder_name = sanitize_drive_folder_name(drive_folder_name, slug)
+        folder_id = ensure_drive_folder(service, safe_drive_folder_name, drive_parent_id)
 
         for file_path in sorted(output_dir.iterdir()):
             if file_path.is_file():
+                if not upload_manifest and file_path.name == "manifest.json":
+                    continue
                 upload_file(service, file_path, folder_id)
 
         folder_link = get_folder_link(service, folder_id, share_with_anyone=share_with_anyone)
         result["drive_folder_id"] = folder_id
         result["drive_folder_link"] = folder_link
+        result["drive_folder_name"] = safe_drive_folder_name
 
     if temp_dir is not None:
         result["cleanup"] = temp_dir
