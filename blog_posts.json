@@ -1126,5 +1126,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-04-21T20:06:14+08:00"
+  },
+  {
+    "title": "[tripleS] My Secret New Zone in Seoul Day2 트냅,백스테이지 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-my-secret-new-zone-in-seoul-day2",
+    "drive_folder_name": "[tripleS] My Secret New Zone in Seoul Day2 트냅,백스테이지 포토 비하인드",
+    "backup_started_at": "2026-04-24T20:01:21+08:00",
+    "image_count": 122,
+    "drive_folder_id": "1kJA12MaJfMpYuwJnPy9xtJYUlby6GGsC",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1kJA12MaJfMpYuwJnPy9xtJYUlby6GGsC",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-04-24T20:05:54+08:00"
   }
 ]
