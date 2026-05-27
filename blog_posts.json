@@ -1174,5 +1174,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-05-16T19:09:20+08:00"
+  },
+  {
+    "title": "[tripleS] 장미처럼 아름다운 봄날! 신위, 하연, 지연 장미스냅",
+    "url": "https://www.triplescosmos.com/blog/triples-xinyu-hayeon-jiyeon-rosesnap",
+    "drive_folder_name": "[tripleS] 장미처럼 아름다운 봄날! 신위, 하연, 지연 장미스냅",
+    "backup_started_at": "2026-05-27T21:38:07+08:00",
+    "image_count": 108,
+    "drive_folder_id": "1mpsoBvGyfeqj8QKE7KyqBAbMOTpkr7DC",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1mpsoBvGyfeqj8QKE7KyqBAbMOTpkr7DC",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-05-27T21:40:36+08:00"
   }
 ]
