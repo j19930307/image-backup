@@ -1210,5 +1210,14 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-06-09T23:02:59+08:00"
+  },
+  {
+    "title": "[tripleS] ASSEMBLE26 <LOVE&POP pt.1> 자켓 촬영 Day2 현장 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-assemble26-love-pop-pt-1-photobehind-day2",
+    "drive_folder_name": "[tripleS] ASSEMBLE26 LOVE&POP pt.1 자켓 촬영 Day2 현장 포토 비하인드",
+    "backup_started_at": "2026-06-20T22:24:40+08:00",
+    "backup_status": "failed",
+    "backup_error": "The read operation timed out",
+    "backup_finished_at": "2026-06-20T22:27:00+08:00"
   }
 ]
