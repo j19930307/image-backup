@@ -1215,9 +1215,21 @@
     "title": "[tripleS] ASSEMBLE26 <LOVE&POP pt.1> 자켓 촬영 Day2 현장 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-assemble26-love-pop-pt-1-photobehind-day2",
     "drive_folder_name": "[tripleS] ASSEMBLE26 LOVE&POP pt.1 자켓 촬영 Day2 현장 포토 비하인드",
-    "backup_started_at": "2026-06-20T22:24:40+08:00",
+    "backup_started_at": "2026-07-01T20:28:40+08:00",
     "backup_status": "failed",
-    "backup_error": "The read operation timed out",
-    "backup_finished_at": "2026-06-20T22:27:00+08:00"
+    "backup_error": "<HttpError 500 when requesting https://www.googleapis.com/upload/drive/v3/files?fields=id%2C+webViewLink&alt=json&uploadType=multipart returned \"Internal Error\". Details: \"[{'message': 'Internal Error', 'domain': 'global', 'reason': 'internalError'}]\">",
+    "backup_finished_at": "2026-07-01T20:29:29+08:00"
+  },
+  {
+    "title": "[tripleS] <ASSEMBLE26 LOVE&POP pt.1> 단체 뮤직비디오 현장 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-assemble26-lovenpop-pt1-mv-behind",
+    "drive_folder_name": "[tripleS] ASSEMBLE26 LOVE&POP pt.1 단체 뮤직비디오 현장 포토 비하인드",
+    "backup_started_at": "2026-07-01T20:29:29+08:00",
+    "image_count": 111,
+    "drive_folder_id": "1vUu1LY_uBecY0okQPES0sY50GYQkb60d",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1vUu1LY_uBecY0okQPES0sY50GYQkb60d",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-07-01T20:31:37+08:00"
   }
 ]
