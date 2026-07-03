@@ -1215,10 +1215,10 @@
     "title": "[tripleS] ASSEMBLE26 <LOVE&POP pt.1> 자켓 촬영 Day2 현장 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-assemble26-love-pop-pt-1-photobehind-day2",
     "drive_folder_name": "[tripleS] ASSEMBLE26 LOVE&POP pt.1 자켓 촬영 Day2 현장 포토 비하인드",
-    "backup_started_at": "2026-07-02T22:09:23+08:00",
+    "backup_started_at": "2026-07-03T22:13:39+08:00",
     "backup_status": "failed",
     "backup_error": "<HttpError 403 when requesting https://www.googleapis.com/drive/v3/files?q=mimeType+%3D+%27application%2Fvnd.google-apps.folder%27+and+name+%3D+%27%5BtripleS%5D+ASSEMBLE26+LOVE%26POP+pt.1+%EC%9E%90%EC%BC%93+%EC%B4%AC%EC%98%81+Day2+%ED%98%84%EC%9E%A5+%ED%8F%AC%ED%86%A0+%EB%B9%84%ED%95%98%EC%9D%B8%EB%93%9C%27+and+trashed+%3D+false+and+%271SJ30EQNzc6ha-JgHciww9kQ7gmqJwfNp%27+in+parents&spaces=drive&fields=files%28id%2C+name%2C+webViewLink%29&alt=json returned \"Project #803663828198 has been deleted.\". Details: \"[{'message': 'Project #803663828198 has been deleted.', 'domain': 'global', 'reason': 'forbidden'}]\">",
-    "backup_finished_at": "2026-07-02T22:09:25+08:00"
+    "backup_finished_at": "2026-07-03T22:13:42+08:00"
   },
   {
     "title": "[tripleS] <ASSEMBLE26 LOVE&POP pt.1> 단체 뮤직비디오 현장 포토 비하인드",
@@ -1236,9 +1236,18 @@
     "title": "[tripleS] <ASSEMBLE26 LOVE&POP pt.1> moon의 방콕 뮤직비디오 현장 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-assemble26-lovenpop-pt1-moon-behind",
     "drive_folder_name": "[tripleS] ASSEMBLE26 LOVE&POP pt.1 moon의 방콕 뮤직비디오 현장 포토 비하인드",
-    "backup_started_at": "2026-07-02T22:09:25+08:00",
+    "backup_started_at": "2026-07-03T22:13:42+08:00",
     "backup_status": "failed",
     "backup_error": "<HttpError 403 when requesting https://www.googleapis.com/drive/v3/files?q=mimeType+%3D+%27application%2Fvnd.google-apps.folder%27+and+name+%3D+%27%5BtripleS%5D+ASSEMBLE26+LOVE%26POP+pt.1+moon%EC%9D%98+%EB%B0%A9%EC%BD%95+%EB%AE%A4%EC%A7%81%EB%B9%84%EB%94%94%EC%98%A4+%ED%98%84%EC%9E%A5+%ED%8F%AC%ED%86%A0+%EB%B9%84%ED%95%98%EC%9D%B8%EB%93%9C%27+and+trashed+%3D+false+and+%271SJ30EQNzc6ha-JgHciww9kQ7gmqJwfNp%27+in+parents&spaces=drive&fields=files%28id%2C+name%2C+webViewLink%29&alt=json returned \"Project #803663828198 has been deleted.\". Details: \"[{'message': 'Project #803663828198 has been deleted.', 'domain': 'global', 'reason': 'forbidden'}]\">",
-    "backup_finished_at": "2026-07-02T22:09:26+08:00"
+    "backup_finished_at": "2026-07-03T22:13:46+08:00"
+  },
+  {
+    "title": "[tripleS] <msnz's One Day Break> 포토 비하인드 1탄",
+    "url": "https://www.triplescosmos.com/blog/triples-msnzs-one-day-break-photobehind-pt1",
+    "drive_folder_name": "[tripleS] msnz's One Day Break 포토 비하인드 1탄",
+    "backup_started_at": "2026-07-03T22:13:46+08:00",
+    "backup_status": "failed",
+    "backup_error": "<HttpError 403 when requesting https://www.googleapis.com/drive/v3/files?q=mimeType+%3D+%27application%2Fvnd.google-apps.folder%27+and+name+%3D+%27%5BtripleS%5D+msnz%5C%27s+One+Day+Break+%ED%8F%AC%ED%86%A0+%EB%B9%84%ED%95%98%EC%9D%B8%EB%93%9C+1%ED%83%84%27+and+trashed+%3D+false+and+%271SJ30EQNzc6ha-JgHciww9kQ7gmqJwfNp%27+in+parents&spaces=drive&fields=files%28id%2C+name%2C+webViewLink%29&alt=json returned \"Project #803663828198 has been deleted.\". Details: \"[{'message': 'Project #803663828198 has been deleted.', 'domain': 'global', 'reason': 'forbidden'}]\">",
+    "backup_finished_at": "2026-07-03T22:13:48+08:00"
   }
 ]
