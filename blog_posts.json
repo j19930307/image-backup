@@ -1342,5 +1342,14 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-08-06T22:24:14+08:00"
+  },
+  {
+    "title": "[tripleS] tripleS <Baby Flower> 음악방송 2주차 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-triples-babyflower-week2-behind",
+    "drive_folder_name": "[tripleS] tripleS Baby Flower 음악방송 2주차 포토 비하인드",
+    "backup_started_at": "2026-08-21T20:53:43+08:00",
+    "backup_status": "failed",
+    "backup_error": "('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})",
+    "backup_finished_at": "2026-08-21T20:53:47+08:00"
   }
 ]
