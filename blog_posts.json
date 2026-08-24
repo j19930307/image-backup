@@ -1360,14 +1360,5 @@
     "backup_status": "failed",
     "backup_error": "('invalid_grant: Bad Request', {'error': 'invalid_grant', 'error_description': 'Bad Request'})",
     "backup_finished_at": "2026-08-24T13:41:06+08:00"
-  },
-  {
-    "title": "[tripleS] tripleS 서아 <marigold> 커버곡 포토 비하인드",
-    "url": "https://www.triplescosmos.com/blog/triples-seoah-marigold-behind",
-    "drive_folder_name": "[tripleS] tripleS 서아 marigold 커버곡 포토 비하인드",
-    "backup_started_at": "2026-08-24T13:41:06+08:00",
-    "backup_status": "failed",
-    "backup_error": "('invalid_grant: Bad Request', {'error': 'invalid_grant', 'error_description': 'Bad Request'})",
-    "backup_finished_at": "2026-08-24T13:41:07+08:00"
   }
 ]
