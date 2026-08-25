@@ -108,12 +108,13 @@ def build_database_schema() -> dict[str, Any]:
 
 
 def build_page_properties(post: dict[str, Any]) -> dict[str, Any]:
+    has_drive_link = bool(post.get("drive_folder_link"))
     return {
         "Title": title_value(str(post.get("title") or "")),
         "URL": url_value(post.get("url")),
-        "Images": number_value(post.get("image_count")),
+        "Images": number_value(post.get("image_count") if has_drive_link else None),
         "Drive Folder": url_value(post.get("drive_folder_link")),
-        "Backup Finished": date_value(post.get("backup_finished_at")),
+        "Backup Finished": date_value(post.get("backup_finished_at") if has_drive_link else None),
     }
 
 

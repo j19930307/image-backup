@@ -18,7 +18,7 @@ def main() -> None:
         )
 
     flow = InstalledAppFlow.from_client_secrets_file(str(credentials_path), SCOPES)
-    creds = flow.run_local_server(port=0)
+    creds = flow.run_local_server(port=0, open_browser=False)
     token_path.write_text(creds.to_json(), encoding="utf-8")
     print(f"Saved OAuth token to {token_path}")
 

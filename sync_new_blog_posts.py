@@ -66,12 +66,15 @@ def main() -> None:
     merged_posts, new_count = merge_posts(existing_posts, scraped_posts)
     save_posts(json_path, merged_posts)
 
+    pending_count = sum(1 for post in merged_posts if not post.get("drive_folder_link"))
+
     print(f"Existing posts: {len(existing_posts)}")
     print(f"Scraped posts: {len(scraped_posts)}")
     print(f"New posts: {new_count}")
+    print(f"Posts missing drive backup: {pending_count}")
     print(f"Updated: {json_path}")
 
-    if new_count == 0 or args.skip_backup:
+    if pending_count == 0 or args.skip_backup:
         return
 
     subprocess.run(
