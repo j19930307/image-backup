@@ -1347,27 +1347,36 @@
     "title": "[tripleS] tripleS <Baby Flower> 음악방송 2주차 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-triples-babyflower-week2-behind",
     "drive_folder_name": "[tripleS] tripleS Baby Flower 음악방송 2주차 포토 비하인드",
-    "backup_started_at": "2026-08-24T20:55:45+08:00",
-    "backup_status": "failed",
-    "backup_error": "('invalid_grant: Bad Request', {'error': 'invalid_grant', 'error_description': 'Bad Request'})",
-    "backup_finished_at": "2026-08-24T20:55:48+08:00"
+    "backup_started_at": "2026-08-25T10:36:03+08:00",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-08-25T10:43:33+08:00",
+    "image_count": 196,
+    "drive_folder_id": "1APm3UXFzOKUC1We2VPwugturgj9Nkypj",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1APm3UXFzOKUC1We2VPwugturgj9Nkypj"
   },
   {
     "title": "[tripleS] tripleS 서연 <운명의 미소녀> 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-triples-seoyeon-mydestinysonyo-behind",
     "drive_folder_name": "[tripleS] tripleS 서연 운명의 미소녀 포토 비하인드",
-    "backup_started_at": "2026-08-24T20:55:48+08:00",
-    "backup_status": "failed",
-    "backup_error": "('invalid_grant: Bad Request', {'error': 'invalid_grant', 'error_description': 'Bad Request'})",
-    "backup_finished_at": "2026-08-24T20:55:49+08:00"
+    "backup_started_at": "2026-08-25T10:43:33+08:00",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-08-25T10:44:43+08:00",
+    "image_count": 27,
+    "drive_folder_id": "1H0orkmzAYY7V0FPsQvK7fBe2FQmqBvkc",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1H0orkmzAYY7V0FPsQvK7fBe2FQmqBvkc"
   },
   {
     "title": "[tripleS] tripleS 서아 <marigold> 커버곡 포토 비하인드",
     "url": "https://www.triplescosmos.com/blog/triples-seoah-marigold-behind",
     "drive_folder_name": "[tripleS] tripleS 서아 marigold 커버곡 포토 비하인드",
-    "backup_started_at": "2026-08-24T20:55:49+08:00",
-    "backup_status": "failed",
-    "backup_error": "('invalid_grant: Bad Request', {'error': 'invalid_grant', 'error_description': 'Bad Request'})",
-    "backup_finished_at": "2026-08-24T20:55:49+08:00"
+    "backup_started_at": "2026-08-25T10:44:43+08:00",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-08-25T10:45:47+08:00",
+    "image_count": 25,
+    "drive_folder_id": "1g_OtvdUO3_Onp-Fdml6ey6Idr_USgXAz",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1g_OtvdUO3_Onp-Fdml6ey6Idr_USgXAz"
   }
 ]
