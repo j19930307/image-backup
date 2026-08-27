@@ -1402,5 +1402,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-08-26T20:58:22+08:00"
+  },
+  {
+    "title": "[tripleS] tripleS Badge War 4 : Trust No One Ep1 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-badgewar4-ep1-behind",
+    "drive_folder_name": "[tripleS] tripleS Badge War 4 Trust No One Ep1 포토 비하인드",
+    "backup_started_at": "2026-08-28T00:13:59+08:00",
+    "image_count": 105,
+    "drive_folder_id": "1cAOQSbpyYDBu3TyhWWkoCXK9nFd9wkf5",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1cAOQSbpyYDBu3TyhWWkoCXK9nFd9wkf5",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-08-28T00:17:21+08:00"
   }
 ]
