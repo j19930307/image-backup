@@ -1414,5 +1414,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-08-28T00:17:21+08:00"
+  },
+  {
+    "title": "[tripleS] tripleS sun 일본 오브젝트 포토 비하인드",
+    "url": "https://www.triplescosmos.com/blog/triples-sun-japan-objekt-photo-behind",
+    "drive_folder_name": "[tripleS] tripleS sun 일본 오브젝트 포토 비하인드",
+    "backup_started_at": "2026-09-02T21:24:26+08:00",
+    "image_count": 41,
+    "drive_folder_id": "17mU3KruRzAl-E9GGxLAnKRbJf3Ntyihi",
+    "drive_folder_link": "https://drive.google.com/drive/folders/17mU3KruRzAl-E9GGxLAnKRbJf3Ntyihi",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-09-02T21:25:59+08:00"
   }
 ]
