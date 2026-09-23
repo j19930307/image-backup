@@ -1462,5 +1462,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-09-22T21:48:11+08:00"
+  },
+  {
+    "title": "[tripleS] From tripleS l 음악방송 필름비하인드 From S7 ~ S12",
+    "url": "https://www.triplescosmos.com/blog/triples-from-triples-filmbehind-from-s7s12",
+    "drive_folder_name": "[tripleS] From tripleS l 음악방송 필름비하인드 From S7 ~ S12",
+    "backup_started_at": "2026-09-24T00:24:13+08:00",
+    "image_count": 122,
+    "drive_folder_id": "1t4U-n_FWk-7Wga9Sak6eUqbLro5CWeab",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1t4U-n_FWk-7Wga9Sak6eUqbLro5CWeab",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-09-24T00:27:34+08:00"
   }
 ]
