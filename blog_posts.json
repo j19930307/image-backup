@@ -1474,5 +1474,17 @@
     "backup_status": "success",
     "backup_error": null,
     "backup_finished_at": "2026-09-24T00:27:34+08:00"
+  },
+  {
+    "title": "[tripleS] tripleS 여름날 휴가를 떠난 소녀들의 필름카메라 포토 선물",
+    "url": "https://www.triplescosmos.com/blog/triples-summer-vacation-filmcamera-present",
+    "drive_folder_name": "[tripleS] tripleS 여름날 휴가를 떠난 소녀들의 필름카메라 포토 선물",
+    "backup_started_at": "2026-09-24T22:42:32+08:00",
+    "image_count": 143,
+    "drive_folder_id": "1PYsA9t0miBYax-GdqRrH3k7SYYhSKhqe",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1PYsA9t0miBYax-GdqRrH3k7SYYhSKhqe",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-09-24T22:46:46+08:00"
   }
 ]
