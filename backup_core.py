@@ -307,6 +307,7 @@ def backup_images(
     max_download_workers: int = DEFAULT_DOWNLOAD_WORKERS,
     work_dir: Path | None = None,
     repo_dir: Path | None = None,
+    image_urls: Iterable[str] | None = None,
 ) -> dict[str, object]:
     slug = slug_from_url(url)
     if work_dir is None:
@@ -317,8 +318,11 @@ def backup_images(
         base_dir = work_dir
 
     output_dir = base_dir / slug
-    html = fetch_html(url)
-    image_urls = extract_image_urls(url, html)
+    if image_urls is None:
+        html = fetch_html(url)
+        image_urls = extract_image_urls(url, html)
+    else:
+        image_urls = list(image_urls)
     manifest = download_images(
         image_urls,
         output_dir,
