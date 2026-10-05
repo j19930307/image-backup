@@ -4,6 +4,7 @@ import argparse
 import json
 import subprocess
 import sys
+import re
 from pathlib import Path
 
 from scrape_blog_posts import DEFAULT_BLOG_URL, scrape_all_posts
@@ -36,20 +37,28 @@ def save_posts(path: Path, posts: list[dict[str, object]]) -> None:
     path.write_text(json.dumps(posts, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def merge_posts(existing: list[dict[str, object]], scraped: list[dict[str, str]]) -> tuple[list[dict[str, object]], int]:
-    existing_by_url = {str(post["url"]): post for post in existing}
-    merged: list[dict[str, object]] = []
+def normalized_title(value: object) -> str:
+    return re.sub(r"\s+", " ", str(value).replace("\u00a0", " ")).strip().lower().replace("assemle", "assemble")
+
+
+def merge_posts(existing: list[dict[str, object]], scraped: list[dict[str, object]]) -> tuple[list[dict[str, object]], int]:
+    merged = [dict(post) for post in existing]
+    existing_by_new_url = {str(post.get("new_url") or post.get("url")): post for post in merged}
+    existing_by_title = {normalized_title(post.get("title")): post for post in merged}
     new_count = 0
 
     for scraped_post in scraped:
-        url = scraped_post["url"]
-        if url in existing_by_url:
-            post = existing_by_url[url]
-            post["title"] = scraped_post["title"]
-        else:
-            post = dict(scraped_post)
-            new_count += 1
+        url = str(scraped_post["url"])
+        post = existing_by_new_url.get(url) or existing_by_title.get(normalized_title(scraped_post.get("title")))
+        if post is not None:
+            post["new_url"] = url
+            continue
+
+        post = dict(scraped_post)
         merged.append(post)
+        existing_by_new_url[url] = post
+        existing_by_title[normalized_title(post.get("title"))] = post
+        new_count += 1
 
     return merged, new_count
 

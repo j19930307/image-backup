@@ -14,7 +14,11 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 )
-DEFAULT_BLOG_URL = "https://www.triplescosmos.com/blog"
+DEFAULT_BLOG_URL = "https://www.triplescosmos.com/"
+PUBLISHING_KIT_API_URL = "https://api.publishingkit.net"
+PUBLISHING_KIT_CHANNEL_CODE = "L2NoYW5uZWxzLzIyODk2"
+PUBLISHING_KIT_CHANNEL_ID = "22896"
+PUBLISHING_KIT_CONSUMER_ID = "PUBL-22896-B00001-129732"
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,35 +112,95 @@ def extract_post_title(html: str, fallback: str) -> str:
     return fallback
 
 
-def scrape_all_posts(start_url: str) -> list[dict[str, str]]:
+def extract_api_image_urls(content: str) -> list[str]:
+    soup = BeautifulSoup(content, "html.parser")
+    return list(dict.fromkeys(img["src"].strip() for img in soup.select("img[src]") if img["src"].strip()))
+
+
+def extract_api_posts(payload: dict[str, object]) -> list[dict[str, object]]:
+    data = payload.get("data", [])
+    if isinstance(data, list):
+        return [post for post in data if isinstance(post, dict)]
+    if isinstance(data, dict):
+        for key in ("posts", "results"):
+            posts = data.get(key, [])
+            if isinstance(posts, list):
+                return [post for post in posts if isinstance(post, dict)]
+    return []
+
+
+def fetch_current_posts(site_url: str = "https://www.triplescosmos.com/") -> list[dict[str, object]]:
     session = requests.Session()
-    session.headers.update({"User-Agent": USER_AGENT})
+    parsed_site_url = urlparse(site_url)
+    site_root = f"{parsed_site_url.scheme}://{parsed_site_url.netloc}"
+    base_headers = {
+        "Origin": site_root,
+        "Referer": f"{site_root}/",
+        "User-Agent": USER_AGENT,
+        "x-publ-channel-id": PUBLISHING_KIT_CHANNEL_ID,
+    }
+    check_in = session.post(
+        f"{PUBLISHING_KIT_API_URL}/api/v2/channels/{PUBLISHING_KIT_CHANNEL_CODE}/guest-check-in",
+        headers=base_headers,
+        json={},
+        timeout=30,
+    )
+    check_in.raise_for_status()
+    check_in_payload = check_in.json()
+    check_in_data = check_in_payload.get("data", {}) if isinstance(check_in_payload, dict) else {}
+    token = (
+        check_in_payload.get("token")
+        or check_in_payload.get("accessToken")
+        or (check_in_data.get("token") if isinstance(check_in_data, dict) else None)
+    )
+    if not token:
+        raise RuntimeError("PublishingKit guest check-in did not return an access token.")
 
-    discovered_posts: list[tuple[str, str]] = []
-    seen_post_urls: set[str] = set()
-    visited_pages: set[str] = set()
-    next_url: str | None = start_url
+    headers = {
+        **base_headers,
+        "Authorization": f"Bearer {token}",
+        "x-publ-consumer-id": PUBLISHING_KIT_CONSUMER_ID,
+    }
+    posts: list[dict[str, object]] = []
+    for page in range(1, 1000):
+        response = session.get(
+            f"{PUBLISHING_KIT_API_URL}/api/v1/posts",
+            params={"limit": 100, "page": page},
+            headers=headers,
+            timeout=30,
+        )
+        response.raise_for_status()
+        page_posts = extract_api_posts(response.json())
+        posts.extend(page_posts)
+        if len(page_posts) < 100:
+            break
 
-    while next_url and next_url not in visited_pages:
-        visited_pages.add(next_url)
-        html = fetch_html(session, next_url)
-        page_posts = extract_posts(next_url, html)
-        for post_url, title in page_posts:
-            if post_url in seen_post_urls:
-                continue
-            seen_post_urls.add(post_url)
-            discovered_posts.append((post_url, title))
-        next_url = find_next_page(next_url, html)
+    discovered: list[dict[str, object]] = []
+    seen_urls: set[str] = set()
+    for post in posts:
+        post_meta = post.get("postMeta", {})
+        if not isinstance(post_meta, dict):
+            continue
+        canonical_url = str(post_meta.get("canonicalUrl") or "").replace(
+            "https://app.publr.co", site_root,
+        )
+        title = normalize_text(str(post.get("title") or ""))
+        if not title or not canonical_url or canonical_url in seen_urls:
+            continue
+        seen_urls.add(canonical_url)
+        discovered.append(
+            {
+                "title": title,
+                "url": canonical_url,
+                "new_url": canonical_url,
+                "image_urls": extract_api_image_urls(str(post.get("content") or "")),
+            }
+        )
+    return discovered
 
-    posts: list[dict[str, str]] = []
-    for url, title in reversed(discovered_posts):
-        try:
-            post_html = fetch_html(session, url)
-            clean_title = extract_post_title(post_html, title)
-        except requests.RequestException:
-            clean_title = title
-        posts.append({"title": clean_title, "url": url})
-    return posts
+
+def scrape_all_posts(start_url: str) -> list[dict[str, str]]:
+    return fetch_current_posts(start_url)
 
 
 def write_csv(output_path: Path, posts: list[dict[str, str]]) -> None:

@@ -127,6 +127,7 @@ def main() -> None:
                 min_image_bytes=args.min_image_bytes,
                 max_download_workers=args.max_download_workers,
                 repo_dir=repo_dir,
+                image_urls=post.get("image_urls") if isinstance(post.get("image_urls"), list) else None,
             )
             cleanup = result.get("cleanup")
             post["image_count"] = result["image_count"]
