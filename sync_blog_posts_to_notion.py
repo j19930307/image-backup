@@ -97,10 +97,35 @@ def date_value(value: str | None) -> dict[str, dict[str, str] | None]:
     return {"date": {"start": value, "time_zone": DEFAULT_TIME_ZONE}}
 
 
+def new_url_for_post(post: dict[str, Any]) -> str | None:
+    value = post.get("new_url")
+    return str(value) if value else None
+
+
+def old_url_for_post(post: dict[str, Any]) -> str | None:
+    explicit_old_url = post.get("old_url")
+    if explicit_old_url:
+        return str(explicit_old_url)
+
+    legacy_url = post.get("url")
+    new_url = post.get("new_url")
+    if legacy_url and legacy_url != new_url:
+        return str(legacy_url)
+    return None
+
+
+def find_existing_page_id(post: dict[str, Any], pages_by_url: dict[str, str]) -> str | None:
+    for url in (new_url_for_post(post), old_url_for_post(post)):
+        if url and url in pages_by_url:
+            return pages_by_url[url]
+    return None
+
+
 def build_database_schema() -> dict[str, Any]:
     return {
         "Title": {"title": {}},
         "New URL": {"url": {}},
+        "Old URL": {"url": {}},
         "Images": {"number": {"format": "number"}},
         "Drive Folder": {"url": {}},
         "Backup Finished": {"date": {}},
@@ -111,7 +136,8 @@ def build_page_properties(post: dict[str, Any]) -> dict[str, Any]:
     has_drive_link = bool(post.get("drive_folder_link"))
     return {
         "Title": title_value(str(post.get("title") or "")),
-        "New URL": url_value(post.get("url")),
+        "New URL": url_value(new_url_for_post(post)),
+        "Old URL": url_value(old_url_for_post(post)),
         "Images": number_value(post.get("image_count") if has_drive_link else None),
         "Drive Folder": url_value(post.get("drive_folder_link")),
         "Backup Finished": date_value(post.get("backup_finished_at") if has_drive_link else None),
@@ -169,10 +195,11 @@ def query_existing_pages(token: str, database_id: str) -> dict[str, str]:
         body = response.json()
 
         for page in body.get("results", []):
-            url_property = page.get("properties", {}).get("URL", {})
-            url = url_property.get("url")
-            if url:
-                pages_by_url[url] = page["id"]
+            properties = page.get("properties", {})
+            for property_name in ("New URL", "Old URL", "URL"):
+                url = properties.get(property_name, {}).get("url")
+                if url:
+                    pages_by_url[url] = page["id"]
 
         if not body.get("has_more"):
             return pages_by_url
@@ -222,8 +249,8 @@ def main() -> None:
     updated = 0
 
     for index, post in enumerate(posts, start=1):
-        url = str(post.get("url") or "")
-        page_id = pages_by_url.get(url)
+        url = new_url_for_post(post) or old_url_for_post(post) or ""
+        page_id = find_existing_page_id(post, pages_by_url)
         if page_id:
             update_page(token, page_id, post)
             updated += 1
