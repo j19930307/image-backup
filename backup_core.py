@@ -12,10 +12,12 @@ from typing import Iterable
 from urllib.parse import unquote, urljoin, urlparse
 
 import google.auth
+import httplib2
 import requests
 from bs4 import BeautifulSoup
 from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials as UserCredentials
+from google_auth_httplib2 import AuthorizedHttp
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -30,6 +32,8 @@ USER_AGENT = (
 SOCIAL_KEYWORDS = ("icon", "logo", "discord", "instagram", "youtube", "tiktok", "facebook", "twitter")
 DEFAULT_MIN_IMAGE_BYTES = 100 * 1024
 DEFAULT_DOWNLOAD_WORKERS = 8
+DEFAULT_DRIVE_TIMEOUT_SECONDS = 180
+DEFAULT_DRIVE_RETRIES = 3
 
 
 def slug_from_url(url: str) -> str:
@@ -229,9 +233,15 @@ def load_drive_credentials(repo_dir: Path | None = None):
     return creds
 
 
-def build_drive_service(repo_dir: Path | None = None):
+def build_drive_service(repo_dir: Path | None = None, timeout: int = DEFAULT_DRIVE_TIMEOUT_SECONDS):
     creds = load_drive_credentials(repo_dir)
-    return build("drive", "v3", credentials=creds)
+    http = AuthorizedHttp(creds, http=httplib2.Http(timeout=timeout))
+    return build("drive", "v3", http=http)
+
+
+def execute_drive_request(request, num_retries: int = DEFAULT_DRIVE_RETRIES):
+    """Execute a Google Drive API request with retries for transient failures."""
+    return request.execute(num_retries=num_retries)
 
 
 def ensure_drive_folder(service, folder_name: str, parent_id: str | None) -> str:
@@ -244,10 +254,8 @@ def ensure_drive_folder(service, folder_name: str, parent_id: str | None) -> str
     if parent_id:
         query_parts.append(f"'{parent_id}' in parents")
 
-    response = (
-        service.files()
-        .list(q=" and ".join(query_parts), spaces="drive", fields="files(id, name, webViewLink)")
-        .execute()
+    response = execute_drive_request(
+        service.files().list(q=" and ".join(query_parts), spaces="drive", fields="files(id, name, webViewLink)")
     )
     files = response.get("files", [])
     if files:
@@ -260,39 +268,70 @@ def ensure_drive_folder(service, folder_name: str, parent_id: str | None) -> str
     if parent_id:
         metadata["parents"] = [parent_id]
 
-    created = service.files().create(body=metadata, fields="id").execute()
+    created = execute_drive_request(service.files().create(body=metadata, fields="id"))
     return created["id"]
+
+
+def list_drive_folder_files(service, folder_id: str) -> dict[str, dict[str, str]]:
+    """Return existing non-trashed files in a Drive folder keyed by file name."""
+    existing: dict[str, dict[str, str]] = {}
+    page_token: str | None = None
+    query = f"'{folder_id}' in parents and trashed = false"
+
+    while True:
+        response = execute_drive_request(
+            service.files().list(
+                q=query,
+                spaces="drive",
+                fields="nextPageToken, files(id, name, webViewLink)",
+                pageSize=1000,
+                pageToken=page_token,
+            )
+        )
+        for item in response.get("files", []):
+            name = item.get("name")
+            if name and name not in existing:
+                existing[name] = item
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            break
+
+    return existing
 
 
 def ensure_public_permission(service, file_id: str) -> None:
     permissions = (
-        service.permissions()
-        .list(fileId=file_id, fields="permissions(id, type, role)")
-        .execute()
-        .get("permissions", [])
+        execute_drive_request(
+            service.permissions().list(fileId=file_id, fields="permissions(id, type, role)")
+        ).get("permissions", [])
     )
     if any(item.get("type") == "anyone" and item.get("role") == "reader" for item in permissions):
         return
 
-    service.permissions().create(
-        fileId=file_id,
-        body={"type": "anyone", "role": "reader"},
-        fields="id",
-    ).execute()
+    execute_drive_request(
+        service.permissions().create(
+            fileId=file_id,
+            body={"type": "anyone", "role": "reader"},
+            fields="id",
+        )
+    )
 
 
 def upload_file(service, file_path: Path, folder_id: str) -> str:
     mime_type = mimetypes.guess_type(file_path.name)[0] or "application/octet-stream"
     metadata = {"name": file_path.name, "parents": [folder_id]}
-    media = MediaFileUpload(str(file_path), mimetype=mime_type, resumable=False)
-    uploaded = service.files().create(body=metadata, media_body=media, fields="id, webViewLink").execute()
+    is_non_empty = file_path.stat().st_size > 0
+    media = MediaFileUpload(str(file_path), mimetype=mime_type, resumable=is_non_empty)
+    uploaded = execute_drive_request(
+        service.files().create(body=metadata, media_body=media, fields="id, webViewLink")
+    )
     return uploaded.get("webViewLink", "")
 
 
 def get_folder_link(service, folder_id: str, share_with_anyone: bool = True) -> str:
     if share_with_anyone:
         ensure_public_permission(service, folder_id)
-    metadata = service.files().get(fileId=folder_id, fields="webViewLink").execute()
+    metadata = execute_drive_request(service.files().get(fileId=folder_id, fields="webViewLink"))
     return metadata.get("webViewLink") or f"https://drive.google.com/drive/folders/{folder_id}"
 
 
@@ -343,10 +382,13 @@ def backup_images(
         service = build_drive_service(repo_dir)
         safe_drive_folder_name = sanitize_drive_folder_name(drive_folder_name, slug)
         folder_id = ensure_drive_folder(service, safe_drive_folder_name, drive_parent_id)
+        existing_files = list_drive_folder_files(service, folder_id)
 
         for file_path in sorted(output_dir.iterdir()):
             if file_path.is_file():
                 if not upload_manifest and file_path.name == "manifest.json":
+                    continue
+                if file_path.name in existing_files:
                     continue
                 upload_file(service, file_path, folder_id)
 
