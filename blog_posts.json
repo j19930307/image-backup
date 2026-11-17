@@ -2418,9 +2418,12 @@
       "https://publ-upload-prod.s3.ap-northeast-2.amazonaws.com/upload/OPR7JFHQ5JHQ06R1I6F-35M6Y/3aa12938-7c79-4bce-8bab-94f357a18dc6"
     ],
     "drive_folder_name": "[tripleS] tripleS 반장 서연과 부반장 수민이가 이끄는 tripleS 교실 풍경 !",
-    "backup_started_at": "2026-11-17T20:29:36+08:00",
-    "backup_status": "failed",
-    "backup_error": "The read operation timed out",
-    "backup_finished_at": "2026-11-17T20:32:40+08:00"
+    "backup_started_at": "2026-11-17T20:48:38+08:00",
+    "backup_status": "success",
+    "backup_error": null,
+    "backup_finished_at": "2026-11-17T20:49:41+08:00",
+    "image_count": 48,
+    "drive_folder_id": "1cm42AWSGMqnGE7v3hOcJvYHz9wDx1lES",
+    "drive_folder_link": "https://drive.google.com/drive/folders/1cm42AWSGMqnGE7v3hOcJvYHz9wDx1lES"
   }
 ]
